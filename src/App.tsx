@@ -35,6 +35,7 @@ export const App: React.FC = () => {
   const [goodCaught, setGoodCaught] = useState<number>(0);
   const [badClicked, setBadClicked] = useState<number>(0);
   const [goldenCaught, setGoldenCaught] = useState<number>(0);
+  const [sludgeClicked, setSludgeClicked] = useState<number>(0);
 
   // Modals & Messages
   const [isGameOverModalOpen, setIsGameOverModalOpen] = useState<boolean>(false);
@@ -98,26 +99,36 @@ export const App: React.FC = () => {
   // Drop Spawner
   const spawnDrop = useCallback(() => {
     const width = containerWidth || 800;
-    const initialSize = 60;
-    // Matching original size multiplier: Math.random() * 0.8 + 0.5
-    const sizeMultiplier = Math.random() * 0.8 + 0.5;
-    const size = initialSize * sizeMultiplier;
+
+    // Drop type weighting: 68% good, 14% bad, 10% large sludge (-5), 8% golden (+3)
+    const rand = Math.random();
+    let type: DropItem['type'] = 'good';
+    if (rand > 0.92) {
+      type = 'golden';
+    } else if (rand > 0.82) {
+      type = 'sludge';
+    } else if (rand > 0.68) {
+      type = 'bad';
+    }
+
+    // Size calculation: large sludge drops are 85px to 110px
+    let size: number;
+    if (type === 'sludge') {
+      const initialSize = 85;
+      const sizeMultiplier = Math.random() * 0.3 + 1.0;
+      size = initialSize * sizeMultiplier;
+    } else {
+      const initialSize = 60;
+      const sizeMultiplier = Math.random() * 0.8 + 0.5;
+      size = initialSize * sizeMultiplier;
+    }
 
     // Random X position inside game width (subtracting size so it stays fully inside container)
     const maxX = Math.max(10, width - size - 10);
     const xPosition = Math.floor(Math.random() * maxX);
 
-    // Drop type weighting: 75% good, 18% bad, 7% golden
-    const rand = Math.random();
-    let type: DropItem['type'] = 'good';
-    if (rand > 0.93) {
-      type = 'golden';
-    } else if (rand > 0.75) {
-      type = 'bad';
-    }
-
-    // Fall duration (randomized slightly around ~3.6s to 4.2s)
-    const duration = +(3.5 + Math.random() * 0.8).toFixed(2);
+    // Fall duration (sludge falls slightly heavier)
+    const duration = +(type === 'sludge' ? 3.0 + Math.random() * 0.5 : 3.5 + Math.random() * 0.8).toFixed(2);
 
     const newDrop: DropItem = {
       id: `${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
@@ -139,6 +150,7 @@ export const App: React.FC = () => {
     setGoodCaught(0);
     setBadClicked(0);
     setGoldenCaught(0);
+    setSludgeClicked(0);
     setDrops([]);
     setSplashes([]);
     setIsGameOverModalOpen(false);
@@ -148,7 +160,7 @@ export const App: React.FC = () => {
     // Initial drop right away
     spawnDrop();
 
-    // Spawning interval: regular drops every 800ms
+    // Spawning interval: regular drops every 850ms
     dropIntervalRef.current = setInterval(() => {
       spawnDrop();
     }, 850);
@@ -187,6 +199,11 @@ export const App: React.FC = () => {
         pointsChange = -1;
         text = '-1';
         setBadClicked((c) => c + 1);
+        soundManager.playBadDrop();
+      } else if (drop.type === 'sludge') {
+        pointsChange = -5;
+        text = '-5';
+        setSludgeClicked((c) => c + 1);
         soundManager.playBadDrop();
       } else if (drop.type === 'golden') {
         pointsChange = 3;
@@ -233,6 +250,21 @@ export const App: React.FC = () => {
     };
   }, [clearGameIntervals]);
 
+  // Reset Game Handler
+  const resetGame = useCallback(() => {
+    clearGameIntervals();
+    setGameRunning(false);
+    setScore(0);
+    setTimeLeft(GAME_DURATION_SECONDS);
+    setGoodCaught(0);
+    setBadClicked(0);
+    setGoldenCaught(0);
+    setSludgeClicked(0);
+    setDrops([]);
+    setSplashes([]);
+    setIsGameOverModalOpen(false);
+  }, [clearGameIntervals]);
+
   return (
     <div className="min-h-screen bg-[#f0f4f8] flex flex-col items-center justify-between p-3 sm:p-6 text-[#131313]">
       <div className="w-full flex flex-col items-center gap-4 sm:gap-5 max-w-[800px]">
@@ -243,14 +275,14 @@ export const App: React.FC = () => {
           onOpenHelp={() => setIsHelpOpen(true)}
         />
 
-        {/* Score Panel: Score, Timer, Start/Restart Button */}
+        {/* Score Panel: Score, Timer, Start/Reset Button */}
         <ScorePanel
           score={score}
           timeLeft={timeLeft}
           highScore={highScore}
           gameRunning={gameRunning}
           onStartGame={startGame}
-          onRestartGame={startGame}
+          onRestartGame={resetGame}
         />
 
         {/* Main 800x600 Game Container */}
@@ -281,6 +313,7 @@ export const App: React.FC = () => {
         goodCaught={goodCaught}
         badClicked={badClicked}
         goldenCaught={goldenCaught}
+        sludgeClicked={sludgeClicked}
         endMessage={endMessage}
         isNewHighScore={isNewHighScore}
         onPlayAgain={startGame}

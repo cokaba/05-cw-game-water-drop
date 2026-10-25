@@ -1,16 +1,116 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>charity: water – Water Drop Game</title>
-    <meta name="description" content="Interactive charity: water drop catching game in React. Catch clean water drops, avoid contaminated drops, and hit high scores within 30 seconds to bring clean water to communities in need." />
-    <meta property="og:title" content="charity: water – Water Drop Game" />
-    <meta property="og:description" content="Interactive charity: water drop catching game in React. Catch clean water drops, avoid contaminated drops, and hit high scores within 30 seconds to bring clean water to communities in need." />
-    <link rel="icon" type="image/png" href="/img/water-can-transparent.png" />
-  </head>
-  <body class="bg-[#f0f4f8] text-[#131313] antialiased selection:bg-[#FFC907]/40 min-h-screen">
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+    <meta name="description" content="Catch the good drops, avoid the bad ones! A charity: water clean water game.">
+    <meta property="og:title" content="charity: water – Water Drop Game">
+    <meta property="og:description" content="Catch the good drops, avoid the bad ones! A charity: water clean water game.">
+    <link rel="icon" type="image/png" href="img/water-can-transparent.png">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="game-wrapper">
+        <!-- charity: water Branding Header -->
+        <div class="brand-header">
+            <img src="img/cw_logo-horizontal.png" alt="charity: water logo" class="brand-logo" onerror="this.src='img/cw_logo.png'">
+            <div class="brand-badge">Water is Life</div>
+        </div>
+
+        <div class="title-container">
+            <img src="img/water-can-transparent.png" alt="Water Can" class="title-icon">
+            <h1 class="game-title">Water Drop</h1>
+        </div>
+        <p class="game-tagline">Catch the good drops, avoid the bad ones!</p>
+        
+        <!-- Score, Timer & Controls Panel -->
+        <div class="score-panel">
+            <div class="score">Score: <span id="score">0</span></div>
+            <div class="goal-indicator">Target: <strong>20 pts</strong></div>
+            <div class="timer">Time: <span id="time">30</span>s</div>
+            <div class="controls-group">
+                <button id="sound-btn" class="icon-btn" title="Toggle Sound">🔊</button>
+                <button id="start-btn">Start Game</button>
+            </div>
+        </div>
+        
+        <!-- Interactive Game Arena -->
+        <div id="game-container">
+            <!-- Idle / Instructions Screen inside Container -->
+            <div id="idle-screen" class="idle-overlay">
+                <img src="img/water-can-transparent.png" alt="Jerry Can" class="idle-can-img">
+                <h2>Ready to Catch Clean Water?</h2>
+                <p>Click as many clean blue drops as you can in 30 seconds.<br>Reach <strong>20 points</strong> to bring clean water to communities in need!</p>
+                
+                <div class="legend-box">
+                    <div class="legend-item">
+                        <span class="legend-dot good-dot"></span>
+                        <span><strong>Clean Drop:</strong> +1 Point</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-dot bad-dot"></span>
+                        <span><strong>Bad Drop:</strong> -1 Point</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-dot sludge-dot"></span>
+                        <span><strong>Large Murky:</strong> -5 Points</span>
+                    </div>
+                    <div class="legend-item">
+                        <span class="legend-dot golden-dot"></span>
+                        <span><strong>Golden Can:</strong> +3 Points</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Clean Water Basin at Bottom -->
+            <div class="water-basin">
+                <span>Clean Water Reservoir</span>
+            </div>
+        </div>
+
+        <!-- Impact Information Card -->
+        <div class="impact-card">
+            <img src="img/water-can-transparent.png" alt="Water Can Icon" class="impact-icon">
+            <div class="impact-text">
+                <strong>Why Water Matters:</strong> 703 million people lack clean water. 100% of public donations fund clean water projects for communities worldwide.
+            </div>
+        </div>
+    </div>
+
+    <!-- Game Over Modal Window -->
+    <div id="game-over-modal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <div id="modal-header" class="modal-header win">
+                <h2 id="modal-title">Game Over!</h2>
+                <p id="modal-subtitle">Here are your results</p>
+            </div>
+            <div class="modal-body">
+                <div id="end-message" class="end-message-box"></div>
+                
+                <div class="stats-row">
+                    <div class="stat-card">
+                        <div class="stat-label">Final Score</div>
+                        <div id="final-score" class="stat-value">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">High Score</div>
+                        <div id="high-score" class="stat-value">0</div>
+                    </div>
+                </div>
+
+                <div class="stats-detail">
+                    <div>Clean Drops Caught (+1): <strong id="stats-good">0</strong></div>
+                    <div>Bad Drops Clicked (-1): <strong id="stats-bad">0</strong></div>
+                    <div>Large Murky Drops Clicked (-5): <strong id="stats-sludge">0</strong></div>
+                    <div>Golden Bonuses (+3): <strong id="stats-golden">0</strong></div>
+                </div>
+
+                <button id="play-again-btn" class="modal-btn">Play Again</button>
+            </div>
+        </div>
+    </div>
+    
+    <script type="module" src="script.js"></script>
+</body>
 </html>

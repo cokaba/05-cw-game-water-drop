@@ -85,11 +85,12 @@ export const ScorePanel: React.FC<ScorePanelProps> = ({
           </button>
         ) : (
           <button
+            id="start-btn"
             onClick={onRestartGame}
-            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 bg-slate-700 hover:bg-slate-800 active:scale-95 text-white font-semibold rounded-lg shadow-sm transition-all text-sm cursor-pointer"
+            className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-2.5 bg-[#F5402C] hover:bg-red-600 active:scale-95 text-white font-bold rounded-lg shadow-sm transition-all text-base cursor-pointer hover:shadow-md"
           >
             <RotateCcw className="w-4 h-4" />
-            <span>Restart</span>
+            <span>Reset</span>
           </button>
         )}
       </div>

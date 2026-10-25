@@ -10,6 +10,7 @@ interface GameOverModalProps {
   goodCaught: number;
   badClicked: number;
   goldenCaught: number;
+  sludgeClicked?: number;
   endMessage: string;
   isNewHighScore: boolean;
   onPlayAgain: () => void;
@@ -23,6 +24,7 @@ export const GameOverModal: React.FC<GameOverModalProps> = ({
   goodCaught,
   badClicked,
   goldenCaught,
+  sludgeClicked = 0,
   endMessage,
   isNewHighScore,
   onPlayAgain,
@@ -144,10 +146,19 @@ export const GameOverModal: React.FC<GameOverModalProps> = ({
             <div className="flex justify-between items-center text-red-600">
               <span className="flex items-center gap-1.5 font-medium">
                 <span className="w-2.5 h-2.5 rounded-full bg-[#ff4444]" />
-                Murky Drops Hit (-1):
+                Bad Drops Hit (-1):
               </span>
               <span className="font-bold">{badClicked}</span>
             </div>
+            {sludgeClicked > 0 && (
+              <div className="flex justify-between items-center text-[#50270a]">
+                <span className="flex items-center gap-1.5 font-medium">
+                  <span className="w-2.5 h-2.5 rounded-full bg-[#6b3e1b]" />
+                  Large Murky Drops Hit (-5):
+                </span>
+                <span className="font-bold">{sludgeClicked}</span>
+              </div>
+            )}
           </div>
 
           {/* Action Buttons */}

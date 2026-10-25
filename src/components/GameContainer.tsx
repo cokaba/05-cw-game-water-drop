@@ -78,9 +78,11 @@ export const GameContainer: React.FC<GameContainerProps> = ({
           <div
             className={`w-12 h-12 rounded-full border-2 animate-splash absolute -top-6 -left-6 ${
               splash.type === 'good'
-                ? 'border-[#2E9DF7] bg-[#2E9DF7]/20'
+                ? 'border-[#4FCB53] bg-[#4FCB53]/20'
                 : splash.type === 'bad'
                 ? 'border-[#F5402C] bg-[#F5402C]/20'
+                : splash.type === 'sludge'
+                ? 'border-[#6b3e1b] bg-[#6b3e1b]/35 border-4'
                 : 'border-[#FFC907] bg-[#FFC907]/30'
             }`}
           />
@@ -89,9 +91,11 @@ export const GameContainer: React.FC<GameContainerProps> = ({
           <div
             className={`text-sm sm:text-base font-black px-1.5 py-0.5 rounded drop-shadow -translate-x-1/2 -translate-y-8 animate-bounce ${
               splash.type === 'good'
-                ? 'text-[#0077cc]'
+                ? 'text-[#159A48]'
                 : splash.type === 'bad'
                 ? 'text-red-600'
+                : splash.type === 'sludge'
+                ? 'text-[#50270a] text-lg font-black'
                 : 'text-amber-600 font-extrabold'
             }`}
           >
@@ -121,8 +125,8 @@ export const GameContainer: React.FC<GameContainerProps> = ({
           </p>
 
           {/* Legend guide */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6 w-full max-w-lg">
-            <div className="bg-white/80 p-2.5 rounded-lg border border-blue-200 flex items-center gap-2 text-left">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 mb-6 w-full max-w-xl">
+            <div className="bg-white/80 p-2 rounded-lg border border-blue-200 flex items-center gap-2 text-left">
               <div className="w-7 h-7 rounded-full bg-[#0099ff] flex items-center justify-center text-white shrink-0 shadow-xs">
                 <ShieldCheck className="w-4 h-4" />
               </div>
@@ -132,22 +136,32 @@ export const GameContainer: React.FC<GameContainerProps> = ({
               </div>
             </div>
 
-            <div className="bg-white/80 p-2.5 rounded-lg border border-red-200 flex items-center gap-2 text-left">
+            <div className="bg-white/80 p-2 rounded-lg border border-red-200 flex items-center gap-2 text-left">
               <div className="w-7 h-7 rounded-full bg-[#ff4444] flex items-center justify-center text-white shrink-0 shadow-xs">
                 <AlertTriangle className="w-4 h-4" />
               </div>
               <div>
-                <div className="text-xs font-bold text-slate-800">Contaminated</div>
+                <div className="text-xs font-bold text-slate-800">Bad Drop</div>
                 <div className="text-[11px] font-semibold text-red-600">-1 Point</div>
               </div>
             </div>
 
-            <div className="bg-white/80 p-2.5 rounded-lg border border-amber-200 flex items-center gap-2 text-left">
+            <div className="bg-white/80 p-2 rounded-lg border border-amber-900/30 flex items-center gap-2 text-left">
+              <div className="w-7 h-7 rounded-full bg-[#6b3e1b] flex items-center justify-center text-red-200 shrink-0 shadow-xs">
+                <span className="text-xs font-black">-5</span>
+              </div>
+              <div>
+                <div className="text-xs font-bold text-slate-800">Large Murky</div>
+                <div className="text-[11px] font-semibold text-[#6b3e1b]">-5 Points</div>
+              </div>
+            </div>
+
+            <div className="bg-white/80 p-2 rounded-lg border border-amber-200 flex items-center gap-2 text-left">
               <div className="w-7 h-7 rounded-full bg-[#FFC907] flex items-center justify-center text-amber-900 shrink-0 shadow-xs">
                 <Sparkles className="w-4 h-4" />
               </div>
               <div>
-                <div className="text-xs font-bold text-slate-800">Golden Bonus</div>
+                <div className="text-xs font-bold text-slate-800">Golden Can</div>
                 <div className="text-[11px] font-semibold text-amber-600">+3 Points</div>
               </div>
             </div>

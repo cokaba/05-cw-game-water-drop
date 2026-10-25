@@ -1,6 +1,6 @@
 import React from 'react';
 import { DropItem } from '../types';
-import { AlertTriangle, Sparkles } from 'lucide-react';
+import { AlertTriangle, Sparkles, Skull } from 'lucide-react';
 
 interface WaterDropItemProps {
   drop: DropItem;
@@ -15,6 +15,7 @@ export const WaterDropItem: React.FC<WaterDropItemProps> = ({
 }) => {
   const isBad = drop.type === 'bad';
   const isGolden = drop.type === 'golden';
+  const isSludge = drop.type === 'sludge';
 
   // Base background & droplet styling
   let bgClass = 'bg-[#0099ff] hover:bg-[#2E9DF7] shadow-lg shadow-blue-400/40';
@@ -22,6 +23,9 @@ export const WaterDropItem: React.FC<WaterDropItemProps> = ({
 
   if (isBad) {
     bgClass = 'bg-[#ff4444] hover:bg-[#F5402C] shadow-lg shadow-red-500/40 bad-drop';
+    reflectionClass = 'murky-reflection';
+  } else if (isSludge) {
+    bgClass = 'bg-[#6b3e1b] hover:bg-[#50270a] shadow-xl shadow-stone-900/70 border-2 border-[#3e1a05]';
     reflectionClass = 'murky-reflection';
   } else if (isGolden) {
     bgClass = 'bg-[#FFC907] hover:bg-[#e0b005] shadow-lg shadow-amber-400/60 ring-2 ring-amber-300';
@@ -49,12 +53,24 @@ export const WaterDropItem: React.FC<WaterDropItemProps> = ({
           {/* Glossy water drop surface light reflection */}
           <div className={`absolute inset-0 rounded-full ${reflectionClass}`} />
 
-          {/* Icon overlay for bad & golden drops */}
+          {/* Icon overlay for bad, sludge & golden drops */}
           {isBad && (
             <AlertTriangle
               className="text-white drop-shadow-sm animate-pulse z-10"
               style={{ width: `${Math.max(14, drop.size * 0.45)}px`, height: `${Math.max(14, drop.size * 0.45)}px` }}
             />
+          )}
+
+          {isSludge && (
+            <div className="z-10 flex flex-col items-center justify-center text-red-200">
+              <Skull
+                className="text-red-200 drop-shadow-md"
+                style={{ width: `${Math.max(18, drop.size * 0.35)}px`, height: `${Math.max(18, drop.size * 0.35)}px` }}
+              />
+              <span className="font-black text-xs sm:text-sm text-red-100 drop-shadow-md -mt-0.5">
+                -5
+              </span>
+            </div>
           )}
 
           {isGolden && (

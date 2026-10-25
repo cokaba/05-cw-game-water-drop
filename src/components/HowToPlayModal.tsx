@@ -57,6 +57,18 @@ export const HowToPlayModal: React.FC<HowToPlayModalProps> = ({ isOpen, onClose 
           </div>
 
           <div className="flex gap-3 items-start">
+            <div className="w-8 h-8 rounded-full bg-amber-950/20 text-[#6b3e1b] flex items-center justify-center shrink-0 mt-0.5 font-black text-sm">
+              -5
+            </div>
+            <div>
+              <div className="font-bold text-slate-900">Beware Large Murky Sludge</div>
+              <p className="text-xs text-slate-600 mt-0.5">
+                Large brown murky drops severely pollute the water! Clicking one penalizes you a massive <strong>-5 points</strong>!
+              </p>
+            </div>
+          </div>
+
+          <div className="flex gap-3 items-start">
             <div className="w-8 h-8 rounded-full bg-amber-100 text-amber-700 flex items-center justify-center shrink-0 mt-0.5">
               <Sparkles className="w-5 h-5" />
             </div>

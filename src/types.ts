@@ -1,4 +1,4 @@
-export type DropType = 'good' | 'bad' | 'golden';
+export type DropType = 'good' | 'bad' | 'golden' | 'sludge';
 
 export interface DropItem {
   id: string;
@@ -22,6 +22,7 @@ export interface GameStats {
   goodCaught: number;
   badClicked: number;
   goldenCaught: number;
+  sludgeClicked: number;
   missedGood: number;
   highScore: number;
 }
