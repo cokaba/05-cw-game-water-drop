@@ -1,46 +1,37 @@
-# charity: water – Water Drop Game Starter
-In this game, users collect as many falling water drops as possible. Users tap to collect drops before they hit the ground. You’ll be working from a partially built version of the game. Some functionality is already provided, and your job is to complete the rest.
+# charity: water – Water Drop Game (React)
 
-## What’s Already Done
+A responsive, high-performance React application rewritten with Vite, TypeScript, and Tailwind CSS based on the charity: water Water Drop challenge.
 
-The starter files already include:
+## Features
 
-- A **heading and tagline**
-- A **start button**
-- A **game container** where water drops appear
-- A **placeholder timer and score** (not functional yet)
-- A **logo image** from charity: water
-- Working code that:
-  - Starts the game when the start button is clicked
-  - Makes water drops fall randomly at different sizes
+- **Catch Clean Water Drops**: Tap falling blue water drops to earn **+1 point**.
+- **Avoid Murky Contaminants**: Avoid red drops that deduct **-1 point**.
+- **Golden Bonus Drops**: Rare yellow jerry-can drops award **+3 points**.
+- **30-Second Countdown**: Race against the clock to collect as much clean water as possible.
+- **Goal & Dynamic Win/Loss Messages**:
+  - Scoring **20 or more points** triggers an celebratory winning state with confetti and randomly selected congratulatory messages from `WINNING_MESSAGES`.
+  - Scoring **under 20 points** provides encouragement with randomized try-again messages from `TRY_AGAIN_MESSAGES`.
+- **Sound Effects (Web Audio API)**:
+  - Synthesized fluid water droplet chime
+  - Murky drop squelch/buzzer
+  - Golden bonus arpeggio
+  - Victory fanfare & try-again cues
+  - Built-in audio mute toggle
+- **charity: water Brand Guidelines**:
+  - Clean Yellow (`#FFC907`), Blue (`#2E9DF7`), and secondary palette
+  - Authentic charity: water logo and Jerry Can asset integration
+  - Mission impact ticker highlighting clean water facts
+- **Persistent High Scores**: Stored in `localStorage` across plays.
 
-## What You Need to Add
+## Getting Started
 
-Here’s what you're required to implement to bring the game to life:
+```bash
+# Install dependencies
+npm install
 
-### Game Functionality
+# Start development server on port 3000
+npm run dev
 
-- **Update the score**
-  - +1 point for each drop clicked  
-
-- **Add a 30-second timer**
-  - When the timer reaches 0, the game ends  
-
-- **Display a message when the game ends**
-  - If the player scores **20 or more points**, show a **winning** message  
-  - If the player scores **less than 20 points**, show a **"try again"** message  
-  - Create one array of possible winning messages and one array of losing messages
-  - Depending on whether the user wins or loses, randomly pick and display a message from the appropriate array
-
-### Visual Styling
-
-- **Add charity: water branding**
-  
-  - Use the provided logo  
-  - Use the [charity: water brand guidelines](https://drive.google.com/file/d/1ct4zYRIwHAtxoNQoeaVwWYPdnruSC6sr/view) to stay on-brand with colors and styling
-  - Add styling rules to ensure your game layout adjusts well across different screen sizes
-
-
-These are the minimum requirements, but if you'd like an additional challenge go ahead and give the LevelUps a shot! For example, you can set up logic to make some of the drops "bad" drops that remove points if the user click them, complete with a different color to distinguish them from "good" drops. Have fun and make the game your own!
-
-If you have any questions or need any assistance with your code, reach out to the HelpHub or attend a Drop-In Hour. You got this!!
+# Build for production
+npm run build
+```
