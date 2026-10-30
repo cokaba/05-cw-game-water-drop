@@ -5,23 +5,26 @@ import { GameContainer } from './components/GameContainer';
 import { GameOverModal } from './components/GameOverModal';
 import { ImpactCard } from './components/ImpactCard';
 import { HowToPlayModal } from './components/HowToPlayModal';
-import { DropItem, SplashEffect } from './types';
+import { DropItem, SplashEffect, Difficulty } from './types';
 import { soundManager } from './utils/audio';
 import {
   GAME_DURATION_SECONDS,
-  WINNING_SCORE_THRESHOLD,
+  DIFFICULTIES,
   WINNING_MESSAGES,
   TRY_AGAIN_MESSAGES,
 } from './utils/constants';
 
 export const App: React.FC = () => {
+  // Difficulty State
+  const [difficulty, setDifficulty] = useState<Difficulty>('medium');
+
   // Game State
   const [gameRunning, setGameRunning] = useState<boolean>(false);
   const [score, setScore] = useState<number>(0);
   const [timeLeft, setTimeLeft] = useState<number>(GAME_DURATION_SECONDS);
   const [highScore, setHighScore] = useState<number>(() => {
     if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('cw_water_drop_highscore');
+      const saved = localStorage.getItem('cw_water_drop_highscore_medium') || localStorage.getItem('cw_water_drop_highscore');
       return saved ? parseInt(saved, 10) || 0 : 0;
     }
     return 0;
@@ -73,17 +76,19 @@ export const App: React.FC = () => {
     setGameRunning(false);
     setDrops([]);
 
+    const cfg = DIFFICULTIES[difficulty];
     const finalScore = scoreRef.current;
     if (finalScore > highScoreRef.current) {
       setIsNewHighScore(true);
       setHighScore(finalScore);
+      localStorage.setItem(`cw_water_drop_highscore_${difficulty}`, finalScore.toString());
       localStorage.setItem('cw_water_drop_highscore', finalScore.toString());
     } else {
       setIsNewHighScore(false);
     }
 
-    // Pick random message from winning or try-again array based on >= 20 score requirement
-    if (finalScore >= WINNING_SCORE_THRESHOLD) {
+    // Pick random message from winning or try-again array based on difficulty target requirement
+    if (finalScore >= cfg.target) {
       const randomIndex = Math.floor(Math.random() * WINNING_MESSAGES.length);
       setEndMessage(WINNING_MESSAGES[randomIndex]);
       soundManager.playWin();
@@ -94,11 +99,12 @@ export const App: React.FC = () => {
     }
 
     setIsGameOverModalOpen(true);
-  }, [clearGameIntervals]);
+  }, [clearGameIntervals, difficulty]);
 
   // Drop Spawner
   const spawnDrop = useCallback(() => {
     const width = containerWidth || 800;
+    const cfg = DIFFICULTIES[difficulty];
 
     // Drop type weighting: 68% good, 14% bad, 10% large sludge (-5), 8% golden (+3)
     const rand = Math.random();
@@ -127,8 +133,13 @@ export const App: React.FC = () => {
     const maxX = Math.max(10, width - size - 10);
     const xPosition = Math.floor(Math.random() * maxX);
 
-    // Fall duration (sludge falls slightly heavier)
-    const duration = +(type === 'sludge' ? 3.0 + Math.random() * 0.5 : 3.5 + Math.random() * 0.8).toFixed(2);
+    // Fall duration: drops fall faster based on selected difficulty
+    let duration: number;
+    if (type === 'sludge') {
+      duration = +(cfg.sludgeDurationMin + Math.random() * (cfg.sludgeDurationMax - cfg.sludgeDurationMin)).toFixed(2);
+    } else {
+      duration = +(cfg.fallDurationMin + Math.random() * (cfg.fallDurationMax - cfg.fallDurationMin)).toFixed(2);
+    }
 
     const newDrop: DropItem = {
       id: `${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
@@ -140,10 +151,11 @@ export const App: React.FC = () => {
     };
 
     setDrops((prev) => [...prev, newDrop]);
-  }, [containerWidth]);
+  }, [containerWidth, difficulty]);
 
   // Start / Restart Game Handler
   const startGame = useCallback(() => {
+    const cfg = DIFFICULTIES[difficulty];
     clearGameIntervals();
     setScore(0);
     setTimeLeft(GAME_DURATION_SECONDS);
@@ -160,10 +172,10 @@ export const App: React.FC = () => {
     // Initial drop right away
     spawnDrop();
 
-    // Spawning interval: regular drops every 850ms
+    // Spawning interval: based on difficulty spawn rate
     dropIntervalRef.current = setInterval(() => {
       spawnDrop();
-    }, 850);
+    }, cfg.spawnRate);
 
     // Countdown timer interval
     timerIntervalRef.current = setInterval(() => {
@@ -175,7 +187,7 @@ export const App: React.FC = () => {
         return prev - 1;
       });
     }, 1000);
-  }, [clearGameIntervals, spawnDrop, endGame]);
+  }, [clearGameIntervals, spawnDrop, endGame, difficulty]);
 
   // Handle clicking a drop
   const handleDropClick = useCallback(
@@ -265,6 +277,20 @@ export const App: React.FC = () => {
     setIsGameOverModalOpen(false);
   }, [clearGameIntervals]);
 
+  const cfg = DIFFICULTIES[difficulty];
+
+  const handleSelectDifficulty = useCallback(
+    (newDiff: Difficulty) => {
+      setDifficulty(newDiff);
+      if (typeof window !== 'undefined') {
+        const saved = localStorage.getItem(`cw_water_drop_highscore_${newDiff}`);
+        setHighScore(saved ? parseInt(saved, 10) || 0 : 0);
+      }
+      resetGame();
+    },
+    [resetGame]
+  );
+
   return (
     <div className="min-h-screen bg-[#f0f4f8] flex flex-col items-center justify-between p-3 sm:p-6 text-[#131313]">
       <div className="w-full flex flex-col items-center gap-4 sm:gap-5 max-w-[800px]">
@@ -275,11 +301,14 @@ export const App: React.FC = () => {
           onOpenHelp={() => setIsHelpOpen(true)}
         />
 
-        {/* Score Panel: Score, Timer, Start/Reset Button */}
+        {/* Score Panel: Score, Timer, Start/Reset Button, Difficulty Selector */}
         <ScorePanel
           score={score}
           timeLeft={timeLeft}
           highScore={highScore}
+          target={cfg.target}
+          difficulty={difficulty}
+          onSelectDifficulty={handleSelectDifficulty}
           gameRunning={gameRunning}
           onStartGame={startGame}
           onRestartGame={resetGame}
@@ -305,11 +334,13 @@ export const App: React.FC = () => {
         <span>charity: water — 100% of public donations fund clean water projects</span>
       </footer>
 
-      {/* Game Over Modal with required 20-point win/try-again message arrays */}
+      {/* Game Over Modal with required win/try-again message arrays */}
       <GameOverModal
         isOpen={isGameOverModalOpen}
         score={score}
         highScore={highScore}
+        target={cfg.target}
+        difficultyName={cfg.name}
         goodCaught={goodCaught}
         badClicked={badClicked}
         goldenCaught={goldenCaught}

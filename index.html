@@ -8,6 +8,7 @@
     <meta property="og:title" content="charity: water – Water Drop Game">
     <meta property="og:description" content="Catch the good drops, avoid the bad ones! A charity: water clean water game.">
     <link rel="icon" type="image/png" href="img/water-can-transparent.png">
+    <link rel="stylesheet" href="https://fonts.cdnfonts.com/css/proxima-nova">
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -24,10 +25,21 @@
         </div>
         <p class="game-tagline">Catch the good drops, avoid the bad ones!</p>
         
+        <!-- Difficulty Selection Bar -->
+        <div class="difficulty-bar">
+            <span class="difficulty-label">Difficulty:</span>
+            <div class="difficulty-options">
+                <button type="button" class="diff-btn" data-diff="easy" id="diff-easy">Easy</button>
+                <button type="button" class="diff-btn active" data-diff="medium" id="diff-medium">Medium</button>
+                <button type="button" class="diff-btn" data-diff="hard" id="diff-hard">Hard</button>
+            </div>
+            <div class="difficulty-info" id="diff-speed-tag">Normal Speed • 25 pts</div>
+        </div>
+
         <!-- Score, Timer & Controls Panel -->
         <div class="score-panel">
             <div class="score">Score: <span id="score">0</span></div>
-            <div class="goal-indicator">Target: <strong>20 pts</strong></div>
+            <div class="goal-indicator">Target: <strong id="target-display">25 pts</strong></div>
             <div class="timer">Time: <span id="time">30</span>s</div>
             <div class="controls-group">
                 <button id="sound-btn" class="icon-btn" title="Toggle Sound">🔊</button>
@@ -41,7 +53,7 @@
             <div id="idle-screen" class="idle-overlay">
                 <img src="img/water-can-transparent.png" alt="Jerry Can" class="idle-can-img">
                 <h2>Ready to Catch Clean Water?</h2>
-                <p>Click as many clean blue drops as you can in 30 seconds.<br>Reach <strong>20 points</strong> to bring clean water to communities in need!</p>
+                <p>Click as many clean blue drops as you can in 30 seconds.<br>Reach <strong id="idle-target">25 points</strong> on <span id="idle-diff-name">Medium</span> to bring clean water to communities in need!</p>
                 
                 <div class="legend-box">
                     <div class="legend-item">
@@ -73,7 +85,10 @@
         <div class="impact-card">
             <img src="img/water-can-transparent.png" alt="Water Can Icon" class="impact-icon">
             <div class="impact-text">
-                <strong>Why Water Matters:</strong> 703 million people lack clean water. 100% of public donations fund clean water projects for communities worldwide.
+                <div class="impact-heading"><strong>Why Water Matters:</strong> 703 million people lack clean water. 100% of public donations fund clean water projects for communities worldwide.</div>
+                <a href="https://www.charitywater.org/" target="_blank" rel="noopener noreferrer" class="impact-link">
+                    Learn more at charitywater.org &rarr;
+                </a>
             </div>
         </div>
     </div>

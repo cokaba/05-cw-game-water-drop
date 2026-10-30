@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { DID_YOU_KNOW_FACTS } from '../utils/constants';
-import { Heart, Sparkles } from 'lucide-react';
+import { Heart, Sparkles, ExternalLink } from 'lucide-react';
 
 export const ImpactCard: React.FC = () => {
   const [factIndex, setFactIndex] = useState(0);
@@ -31,6 +31,17 @@ export const ImpactCard: React.FC = () => {
           <p className="text-xs sm:text-sm text-slate-700 leading-relaxed font-medium transition-opacity duration-300">
             {DID_YOU_KNOW_FACTS[factIndex]}
           </p>
+          <div className="mt-2 flex justify-center sm:justify-start">
+            <a
+              href="https://www.charitywater.org/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 text-xs font-bold text-[#2E9DF7] hover:text-[#0284c7] hover:underline transition-colors"
+            >
+              <span>Visit charitywater.org</span>
+              <ExternalLink className="w-3 h-3" />
+            </a>
+          </div>
         </div>
 
         <div className="shrink-0 flex items-center gap-1.5 text-xs text-slate-500 font-semibold bg-slate-50 px-3 py-1.5 rounded-lg border border-slate-100">

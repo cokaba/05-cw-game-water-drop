@@ -1,12 +1,13 @@
 import React, { useEffect } from 'react';
 import confetti from 'canvas-confetti';
 import { Trophy, RefreshCw, AlertCircle, Award, X } from 'lucide-react';
-import { WINNING_SCORE_THRESHOLD } from '../utils/constants';
 
 interface GameOverModalProps {
   isOpen: boolean;
   score: number;
   highScore: number;
+  target?: number;
+  difficultyName?: string;
   goodCaught: number;
   badClicked: number;
   goldenCaught: number;
@@ -21,6 +22,8 @@ export const GameOverModal: React.FC<GameOverModalProps> = ({
   isOpen,
   score,
   highScore,
+  target = 20,
+  difficultyName = 'Medium',
   goodCaught,
   badClicked,
   goldenCaught,
@@ -30,7 +33,7 @@ export const GameOverModal: React.FC<GameOverModalProps> = ({
   onPlayAgain,
   onClose,
 }) => {
-  const isWin = score >= WINNING_SCORE_THRESHOLD;
+  const isWin = score >= target;
 
   useEffect(() => {
     if (isOpen && isWin) {
@@ -80,7 +83,9 @@ export const GameOverModal: React.FC<GameOverModalProps> = ({
             {isWin ? 'Goal Achieved!' : 'Time Is Up!'}
           </h3>
           <p className="text-white/90 text-sm mt-1 font-medium">
-            {isWin ? '20+ Drops Collected!' : 'Target: 20 Drops'}
+            {isWin
+              ? `${target}+ Drops on ${difficultyName} Mode!`
+              : `Target: ${target} Drops (${difficultyName} Mode)`}
           </p>
         </div>
 
@@ -120,7 +125,7 @@ export const GameOverModal: React.FC<GameOverModalProps> = ({
                 <span>{highScore}</span>
               </div>
               <span className="inline-block mt-1 text-[11px] font-medium text-slate-500">
-                Goal: 20 pts
+                Goal: {target} pts
               </span>
             </div>
           </div>

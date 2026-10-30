@@ -24,6 +24,43 @@ export const BRAND_COLORS = {
 } as const;
 
 export const GAME_DURATION_SECONDS = 30;
+
+export const DIFFICULTIES = {
+  easy: {
+    name: 'Easy',
+    target: 15,
+    fallDurationMin: 4.2,
+    fallDurationMax: 5.0,
+    sludgeDurationMin: 3.6,
+    sludgeDurationMax: 4.4,
+    spawnRate: 950,
+    speedTag: 'Slow Drops • 15 pts Target',
+    color: '#159A48',
+  },
+  medium: {
+    name: 'Medium',
+    target: 25,
+    fallDurationMin: 3.0,
+    fallDurationMax: 3.8,
+    sludgeDurationMin: 2.5,
+    sludgeDurationMax: 3.2,
+    spawnRate: 800,
+    speedTag: 'Normal Speed • 25 pts Target',
+    color: '#2E9DF7',
+  },
+  hard: {
+    name: 'Hard',
+    target: 50,
+    fallDurationMin: 1.8,
+    fallDurationMax: 2.4,
+    sludgeDurationMin: 1.4,
+    sludgeDurationMax: 1.9,
+    spawnRate: 400,
+    speedTag: '⚡ Rapid Drops • 50 pts Target',
+    color: '#F5402C',
+  },
+} as const;
+
 export const WINNING_SCORE_THRESHOLD = 20;
 
 // Required by README.md: Array of winning messages when score >= 20

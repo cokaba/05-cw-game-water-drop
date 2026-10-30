@@ -1,3 +1,5 @@
+@import url('https://fonts.cdnfonts.com/css/proxima-nova');
+
 /* Charity: water Brand Colors & Fonts
 
 Primary Colors:
@@ -13,7 +15,7 @@ Secondary Colors:
 - Pink:       #F16061
 
 Fonts:
-- Proxima Nova
+- Proxima Nova (Black weight: 900)
 - Avenir
 - Arial, sans-serif
 */
@@ -30,7 +32,7 @@ body {
     align-items: center;
     min-height: 100vh;
     background-color: #f0f4f8;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-family: "Proxima Nova Black", "Proxima Nova", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     color: #131313;
     padding: 20px 10px;
 }
@@ -105,6 +107,87 @@ body {
     margin-top: -8px;
     margin-bottom: 8px;
     text-align: center;
+}
+
+/* Difficulty Selection Bar */
+.difficulty-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 800px;
+    background-color: #ffffff;
+    padding: 8px 16px;
+    border-radius: 10px;
+    border: 1px solid #e2e8f0;
+    gap: 12px;
+}
+
+.difficulty-label {
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #475569;
+}
+
+.difficulty-options {
+    display: flex;
+    background-color: #f1f5f9;
+    padding: 3px;
+    border-radius: 8px;
+    gap: 4px;
+}
+
+.diff-btn {
+    padding: 6px 14px;
+    font-size: 13px;
+    font-weight: 700;
+    border: none;
+    border-radius: 6px;
+    background-color: transparent;
+    color: #64748b;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.diff-btn:hover {
+    color: #1e293b;
+    background-color: rgba(255, 255, 255, 0.6);
+}
+
+.diff-btn.active[data-diff="easy"] {
+    background-color: #159A48;
+    color: #ffffff;
+    box-shadow: 0 1px 3px rgba(21, 154, 72, 0.35);
+}
+
+.diff-btn.active[data-diff="medium"] {
+    background-color: #2E9DF7;
+    color: #ffffff;
+    box-shadow: 0 1px 3px rgba(46, 157, 247, 0.35);
+}
+
+.diff-btn.active[data-diff="hard"] {
+    background-color: #F5402C;
+    color: #ffffff;
+    box-shadow: 0 1px 3px rgba(245, 64, 44, 0.35);
+}
+
+.difficulty-info {
+    font-size: 12px;
+    font-weight: 700;
+    color: #334155;
+    background-color: #f8fafc;
+    border: 1px solid #e2e8f0;
+    padding: 4px 10px;
+    border-radius: 6px;
+    white-space: nowrap;
+}
+
+#idle-diff-name {
+    font-weight: 700;
+    color: #2E9DF7;
 }
 
 /* Score & Control Panel */
@@ -525,6 +608,9 @@ body {
 }
 
 .impact-text {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
     font-size: 13px;
     line-height: 1.4;
     color: #475569;
@@ -532,6 +618,23 @@ body {
 
 .impact-text strong {
     color: #b45309;
+}
+
+.impact-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #2E9DF7;
+    text-decoration: none;
+    transition: color 0.15s ease;
+    margin-top: 2px;
+}
+
+.impact-link:hover {
+    color: #0284c7;
+    text-decoration: underline;
 }
 
 /* Modal Window */
@@ -668,8 +771,14 @@ body {
 }
 
 @media (max-width: 850px) {
-    .game-wrapper, .score-panel, #game-container, .impact-card {
+    .game-wrapper, .difficulty-bar, .score-panel, #game-container, .impact-card {
         width: 95vw;
+    }
+    
+    .difficulty-bar {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 8px;
     }
     
     #game-container {

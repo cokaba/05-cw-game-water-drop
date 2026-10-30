@@ -1,4 +1,17 @@
 export type DropType = 'good' | 'bad' | 'golden' | 'sludge';
+export type Difficulty = 'easy' | 'medium' | 'hard';
+
+export interface DifficultyConfig {
+  name: string;
+  target: number;
+  fallDurationMin: number;
+  fallDurationMax: number;
+  sludgeDurationMin: number;
+  sludgeDurationMax: number;
+  spawnRate: number;
+  speedTag: string;
+  color: string;
+}
 
 export interface DropItem {
   id: string;

@@ -1,5 +1,47 @@
 // charity: water – Water Drop Game Logic
 
+// Difficulty Settings:
+// - Easy:   Slow fall speed (4.2s-5.0s), Target: 15 pts
+// - Medium: Normal fall speed (3.0s-3.8s), Target: 25 pts
+// - Hard:   Fast fall speed (1.8s-2.4s), Target: 35 pts
+const DIFFICULTY_CONFIG = {
+  easy: {
+    name: "Easy",
+    target: 15,
+    fallDurationMin: 4.2,
+    fallDurationMax: 5.0,
+    sludgeDurationMin: 3.6,
+    sludgeDurationMax: 4.4,
+    spawnRate: 950,
+    speedTag: "Slow Drops • 15 pts Target",
+    color: "#159A48"
+  },
+  medium: {
+    name: "Medium",
+    target: 25,
+    fallDurationMin: 3.0,
+    fallDurationMax: 3.8,
+    sludgeDurationMin: 2.5,
+    sludgeDurationMax: 3.2,
+    spawnRate: 800,
+    speedTag: "Normal Speed • 25 pts Target",
+    color: "#2E9DF7"
+  },
+  hard: {
+    name: "Hard",
+    target: 50,
+    fallDurationMin: 1.8,
+    fallDurationMax: 2.4,
+    sludgeDurationMin: 1.4,
+    sludgeDurationMax: 1.9,
+    spawnRate: 400,
+    speedTag: "⚡ Rapid Drops • 50 pts Target",
+    color: "#F5402C"
+  }
+};
+
+let currentDifficulty = "medium";
+
 // Variables to control game state
 let gameRunning = false;     // Keeps track of whether game is active or not
 let dropMaker = null;        // Will store our timer that creates drops regularly
@@ -7,7 +49,7 @@ let timerInterval = null;    // Stores countdown timer interval
 let score = 0;               // Player score
 let time = 30;               // 30-second countdown timer
 let soundEnabled = true;     // Audio toggle
-let highScore = 0;           // Highest score achieved
+let highScore = 0;           // Highest score achieved for current difficulty
 
 // Gameplay counters
 let goodDropsCaught = 0;
@@ -15,38 +57,101 @@ let badDropsClicked = 0;
 let goldenDropsCaught = 0;
 let sludgeDropsClicked = 0;
 
-// Load saved high score from localStorage if available
-try {
-  const saved = localStorage.getItem("cw_water_drop_highscore");
-  if (saved) highScore = parseInt(saved, 10) || 0;
-} catch (e) {
-  // Local storage failsafe
+// High score management per difficulty
+function getHighScore(diff = currentDifficulty) {
+  try {
+    const val = localStorage.getItem(`cw_water_drop_highscore_${diff}`);
+    if (val !== null) return parseInt(val, 10) || 0;
+    if (diff === "medium") {
+      const legacy = localStorage.getItem("cw_water_drop_highscore");
+      if (legacy !== null) return parseInt(legacy, 10) || 0;
+    }
+  } catch (e) {}
+  return 0;
 }
 
-// Required by assignment: Array of winning messages when score is 20 or higher
+function saveHighScore(scoreVal, diff = currentDifficulty) {
+  try {
+    localStorage.setItem(`cw_water_drop_highscore_${diff}`, scoreVal.toString());
+    localStorage.setItem("cw_water_drop_highscore", scoreVal.toString());
+  } catch (e) {}
+}
+
+highScore = getHighScore(currentDifficulty);
+
+// Required by assignment: Array of winning messages
 const winningMessages = [
   "Incredible work! You collected enough clean water to change lives!",
   "You're a clean water hero! Every single drop counts for communities around the world!",
-  "Amazing reflexes! You hit 20+ drops and brought clean drinking water home!",
+  "Amazing reflexes! You hit the target and brought clean drinking water home!",
   "Fantastic victory! Your speed and precision keep clean water flowing!",
-  "Pure excellence! You reached the target and conquered the Water Drop challenge!",
+  "Pure excellence! You conquered the Water Drop challenge!",
   "Brilliant job! Clean water changes everything, and you just proved it!"
 ];
 
-// Required by assignment: Array of try-again messages when score is less than 20
+// Required by assignment: Array of try-again messages
 const losingMessages = [
   "Almost there! Every drop matters — give it another shot!",
-  "Good effort! Tap faster to reach 20 drops and bring clean water home!",
-  "Don't give up! Dodge those murky red drops and catch the clean blue ones!",
-  "Close call! With a little more practice, you'll easily break 20 points!",
+  "Good effort! Tap faster to reach the target and bring clean water home!",
+  "Don't give up! Dodge those murky drops and catch the clean blue ones!",
+  "Close call! With a little more practice, you'll reach the target score!",
   "Keep going! Clear waters are within reach — click Start to try again!",
-  "You've got this! Quick fingers will help you reach 20 points next round!"
+  "You've got this! Quick fingers will help you win next round!"
 ];
 
 // Wait for button clicks to control the game
 const startBtn = document.getElementById("start-btn");
 const playAgainBtn = document.getElementById("play-again-btn");
 const soundBtn = document.getElementById("sound-btn");
+const diffButtons = document.querySelectorAll(".diff-btn");
+
+function setDifficulty(diff) {
+  if (!DIFFICULTY_CONFIG[diff]) return;
+  currentDifficulty = diff;
+  const cfg = DIFFICULTY_CONFIG[diff];
+
+  // Update button active state
+  diffButtons.forEach((btn) => {
+    if (btn.getAttribute("data-diff") === diff) {
+      btn.classList.add("active");
+    } else {
+      btn.classList.remove("active");
+    }
+  });
+
+  // Update target display in score panel
+  const targetDisplay = document.getElementById("target-display");
+  if (targetDisplay) targetDisplay.textContent = `${cfg.target} pts`;
+
+  // Update speed tag in difficulty bar
+  const speedTag = document.getElementById("diff-speed-tag");
+  if (speedTag) speedTag.textContent = cfg.speedTag;
+
+  // Update idle screen target text and difficulty name
+  const idleTarget = document.getElementById("idle-target");
+  if (idleTarget) idleTarget.textContent = `${cfg.target} points`;
+
+  const idleDiffName = document.getElementById("idle-diff-name");
+  if (idleDiffName) {
+    idleDiffName.textContent = cfg.name;
+    idleDiffName.style.color = cfg.color;
+  }
+
+  // Update current high score for this difficulty
+  highScore = getHighScore(diff);
+
+  // If game is currently running, reset it so new settings apply
+  if (gameRunning) {
+    resetGame();
+  }
+}
+
+diffButtons.forEach((btn) => {
+  btn.addEventListener("click", () => {
+    const diff = btn.getAttribute("data-diff");
+    setDifficulty(diff);
+  });
+});
 
 if (startBtn) {
   startBtn.addEventListener("click", () => {
@@ -140,8 +245,9 @@ function startGame() {
     startBtn.disabled = false;
   }
 
-  // Create new drops regularly (every 850 milliseconds)
-  dropMaker = setInterval(createDrop, 850);
+  // Create new drops regularly based on difficulty speed
+  const cfg = DIFFICULTY_CONFIG[currentDifficulty];
+  dropMaker = setInterval(createDrop, cfg.spawnRate);
 
   // Start 30-second countdown timer (decrements every 1 second)
   timerInterval = setInterval(() => {
@@ -219,10 +325,14 @@ function createDrop() {
   const xPosition = Math.random() * maxX;
   drop.style.left = `${xPosition}px`;
 
-  // Make drops fall for about 3.8 seconds (large sludge falls slightly heavier/faster)
-  const fallDuration = dropType === "sludge"
-    ? (3.0 + Math.random() * 0.5).toFixed(2)
-    : (3.5 + Math.random() * 0.6).toFixed(2);
+  // Make drops fall faster based on selected difficulty
+  const cfg = DIFFICULTY_CONFIG[currentDifficulty];
+  let fallDuration;
+  if (dropType === "sludge") {
+    fallDuration = (cfg.sludgeDurationMin + Math.random() * (cfg.sludgeDurationMax - cfg.sludgeDurationMin)).toFixed(2);
+  } else {
+    fallDuration = (cfg.fallDurationMin + Math.random() * (cfg.fallDurationMax - cfg.fallDurationMin)).toFixed(2);
+  }
   drop.style.animationDuration = `${fallDuration}s`;
 
   // Add click handler to catch the drop
@@ -360,18 +470,16 @@ function endGame() {
   const drops = document.querySelectorAll(".water-drop");
   drops.forEach((d) => d.remove());
 
-  // Check and update high score
+  const cfg = DIFFICULTY_CONFIG[currentDifficulty];
+
+  // Check and update high score for current difficulty
   if (score > highScore) {
     highScore = score;
-    try {
-      localStorage.setItem("cw_water_drop_highscore", highScore.toString());
-    } catch (e) {
-      // Local storage failsafe
-    }
+    saveHighScore(highScore, currentDifficulty);
   }
 
-  // Determine win or loss and select random message from corresponding array
-  const isWin = score >= 20;
+  // Determine win or loss based on current difficulty target
+  const isWin = score >= cfg.target;
   let chosenMessage = "";
 
   if (isWin) {
@@ -404,11 +512,17 @@ function showGameOverModal(isWin, message) {
 
   if (!modal) return;
 
+  const cfg = DIFFICULTY_CONFIG[currentDifficulty];
+
   if (modalHeader) {
     modalHeader.className = `modal-header ${isWin ? "win" : "try-again"}`;
   }
   if (modalTitle) modalTitle.textContent = isWin ? "Goal Achieved!" : "Time Is Up!";
-  if (modalSubtitle) modalSubtitle.textContent = isWin ? "20+ Drops Collected!" : "Target: 20 Drops";
+  if (modalSubtitle) {
+    modalSubtitle.textContent = isWin
+      ? `${cfg.target}+ Drops on ${cfg.name} Mode!`
+      : `Target: ${cfg.target} Drops (${cfg.name} Mode)`;
+  }
   if (endMessageEl) endMessageEl.textContent = `"${message}"`;
   if (finalScoreEl) finalScoreEl.textContent = score;
   if (highScoreEl) highScoreEl.textContent = highScore;
